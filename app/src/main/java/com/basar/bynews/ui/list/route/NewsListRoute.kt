@@ -26,8 +26,9 @@ fun NewsListRoute(
     NewsListScreen(
         uiModelState = uiModelState,
         modifier = modifier,
+        onRetry = { newsListViewModel.getNews() },
         onNavigateToDetail = {
-//            navController.navigate(BYNewsScreens.NewsDetail.route)
+            navController.navigate(BYNewsScreens.NewsDetail.route)
         }
     )
 }

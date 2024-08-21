@@ -35,11 +35,11 @@ private fun mockInterceptor(): Interceptor = MockNetworkInterceptor()
         "$BASE_URL/news",
         { newsResponse },
         200,
-        5000
+        2000
     )
     .mock(
         "$BASE_URL/newsDetail",
         { newsDetailResponse },
         200,
-        5000
+        2000
     )
