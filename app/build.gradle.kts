@@ -77,5 +77,6 @@ dependencies {
     implementation(libs.okhttp.logging)
 
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.coil)
 
 }
