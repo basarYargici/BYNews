@@ -63,4 +63,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Koin dependency injection
+    implementation(libs.android.koin)
+    implementation(libs.androidx.koin.compose)
+    implementation(libs.androidx.koin.navigation)
+
 }
