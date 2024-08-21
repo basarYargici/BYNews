@@ -4,13 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.basar.bynews.ui.list.route.NewsListRoute
+import com.basar.bynews.ui.splash.route.SplashRoute
 import com.basar.bynews.ui.theme.BYNewsTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +20,30 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BYNewsTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Basar",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navHostController = rememberNavController()
+                NavHost(
+                    navController = navHostController,
+                    startDestination = BYNewsScreens.Splash.route
+                ) {
+                    navigation(navController = navHostController)
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BYNewsTheme {
-        Greeting("Android")
+fun NavGraphBuilder.navigation(
+    navController: NavController
+) {
+    composable(route = BYNewsScreens.Splash.route) {
+        SplashRoute(modifier = Modifier, navController = navController)
     }
+
+//    composable(route = BYNewsScreens.NewsList.route) {
+//        NewsListRoute(modifier = Modifier, navController = navController)
+//    }
+//
+//    composable(route = BYNewsScreens.NewsDetail.route) {
+//        PlayerRoute(modifier = Modifier, navigator = navController)
+//    }
 }
