@@ -39,10 +39,10 @@ fun NavGraphBuilder.navigation(
         SplashRoute(modifier = Modifier, navController = navController)
     }
 
-//    composable(route = BYNewsScreens.NewsList.route) {
-//        NewsListRoute(modifier = Modifier, navController = navController)
-//    }
-//
+    composable(route = BYNewsScreens.NewsList.route) {
+        NewsListRoute(modifier = Modifier, navController = navController)
+    }
+
 //    composable(route = BYNewsScreens.NewsDetail.route) {
 //        PlayerRoute(modifier = Modifier, navigator = navController)
 //    }
