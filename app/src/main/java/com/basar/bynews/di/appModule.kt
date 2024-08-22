@@ -4,5 +4,6 @@ val appModule = mutableListOf(
     remoteModule(),
     repositoryModule,
     domainModule,
-    viewModelModule
+    viewModelModule,
+    helperModule
 )
