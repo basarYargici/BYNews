@@ -2,11 +2,11 @@ package com.basar.bynews.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.basar.bynews.ui.list.viewModel.BaseUIModel
-import com.basar.bynews.ui.list.viewModel.setError
-import com.basar.bynews.ui.list.viewModel.setLoading
-import com.basar.bynews.ui.list.viewModel.setSuccess
+import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.ErrorHandler
+import com.basar.bynews.util.setError
+import com.basar.bynews.util.setLoading
+import com.basar.bynews.util.setSuccess
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

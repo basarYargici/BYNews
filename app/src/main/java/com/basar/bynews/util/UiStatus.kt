@@ -1,4 +1,4 @@
-package com.basar.bynews.ui.list.viewModel
+package com.basar.bynews.util
 
 sealed interface UiStatus<out T> {
     data object Loading : UiStatus<Nothing>

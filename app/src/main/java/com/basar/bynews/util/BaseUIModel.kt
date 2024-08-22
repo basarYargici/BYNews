@@ -1,4 +1,4 @@
-package com.basar.bynews.ui.list.viewModel
+package com.basar.bynews.util
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update

@@ -3,6 +3,8 @@ package com.basar.bynews.ui.list.viewModel
 import com.basar.bynews.base.BaseViewModel
 import com.basar.bynews.domain.GetNewsUseCase
 import com.basar.bynews.model.NewsResponse
+import com.basar.bynews.util.BaseUIModel
+import com.basar.bynews.util.setSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class NewsListViewModel(

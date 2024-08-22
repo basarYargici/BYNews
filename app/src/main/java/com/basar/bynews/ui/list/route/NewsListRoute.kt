@@ -6,7 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.basar.bynews.BYNewsScreens
+import com.basar.bynews.NEWS_DETAIL_ID
 import com.basar.bynews.ui.list.screen.NewsListScreen
 import com.basar.bynews.ui.list.viewModel.NewsListViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -27,8 +27,9 @@ fun NewsListRoute(
         uiModelState = uiModelState,
         modifier = modifier,
         onRetry = { newsListViewModel.getNews() },
-        onNavigateToDetail = {
-            navController.navigate(BYNewsScreens.NewsDetail.route)
+        onNavigateToDetail = { id ->
+            val route = "NEWS_DETAIL_ROUTE?$NEWS_DETAIL_ID=$id"
+            navController.navigate(route)
         }
     )
 }

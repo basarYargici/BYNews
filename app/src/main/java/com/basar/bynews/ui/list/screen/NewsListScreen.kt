@@ -36,8 +36,8 @@ import com.basar.bynews.R
 import com.basar.bynews.extension.shimmerEffect
 import com.basar.bynews.model.NewsItemResponse
 import com.basar.bynews.model.NewsResponse
-import com.basar.bynews.ui.list.viewModel.BaseUIModel
-import com.basar.bynews.ui.list.viewModel.UiStatus
+import com.basar.bynews.util.BaseUIModel
+import com.basar.bynews.util.UiStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

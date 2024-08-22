@@ -7,9 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.basar.bynews.ui.detail.route.NewsDetailRoute
 import com.basar.bynews.ui.list.route.NewsListRoute
 import com.basar.bynews.ui.splash.route.SplashRoute
 import com.basar.bynews.ui.theme.BYNewsTheme
@@ -31,6 +34,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+const val NEWS_DETAIL_ID = "newsDetailId"
+const val NEWS_DETAIL_ROUTE = "NEWS_DETAIL_ROUTE?$NEWS_DETAIL_ID={$NEWS_DETAIL_ID}"
 
 fun NavGraphBuilder.navigation(
     navController: NavController
@@ -43,7 +48,16 @@ fun NavGraphBuilder.navigation(
         NewsListRoute(modifier = Modifier, navController = navController)
     }
 
-//    composable(route = BYNewsScreens.NewsDetail.route) {
-//        PlayerRoute(modifier = Modifier, navigator = navController)
-//    }
+    composable(
+        route = NEWS_DETAIL_ROUTE,
+        arguments = listOf(
+            navArgument(NEWS_DETAIL_ID) {
+                defaultValue = null
+                nullable = true
+                type = NavType.StringType
+            },
+        ),
+    ) {
+        NewsDetailRoute(modifier = Modifier, navController = navController)
+    }
 }
