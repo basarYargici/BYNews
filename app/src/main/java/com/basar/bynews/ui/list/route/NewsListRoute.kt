@@ -17,7 +17,6 @@ fun NewsListRoute(
     onNavigateToDetail: (String) -> Unit,
 ) {
     val uiModelState by newsListViewModel.newsListUIModel.collectAsState()
-    val isDescendingOrder by newsListViewModel.isDescendingOrder.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         uiModelState.status.onInitial {
@@ -27,7 +26,6 @@ fun NewsListRoute(
 
     NewsListScreen(
         uiModelState = uiModelState,
-        isDescendingOrder = isDescendingOrder,
         modifier = modifier,
         onRetry = { newsListViewModel.getNews() },
         onToggleSort = { newsListViewModel.toggleSortOrderAndRefresh() },

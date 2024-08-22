@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.basar.bynews.R
+import com.basar.bynews.extension.isTrue
 import com.basar.bynews.extension.shimmerEffect
 import com.basar.bynews.model.uimodel.NewsItemUIModel
 import com.basar.bynews.model.uimodel.NewsListUIModel
@@ -44,7 +45,6 @@ import com.basar.bynews.util.UiStatus
 @Composable
 fun NewsListScreen(
     uiModelState: BaseUIModel<NewsListUIModel>,
-    isDescendingOrder: Boolean,
     modifier: Modifier,
     onRetry: () -> Unit,
     onNavigateToDetail: (String) -> Unit = { },
@@ -57,7 +57,7 @@ fun NewsListScreen(
                 actions = {
                     TextButton(onClick = onToggleSort) {
                         Text(
-                            text = if (isDescendingOrder) {
+                            text = if (uiModelState.data?.isDescendingOrder.isTrue()) {
                                 "Change to Oldest Top"
                             } else {
                                 "Change to Newest Top"

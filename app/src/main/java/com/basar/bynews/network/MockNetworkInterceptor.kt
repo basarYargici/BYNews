@@ -1,5 +1,6 @@
 package com.basar.bynews.network
 
+import com.basar.bynews.extension.isZero
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
@@ -23,7 +24,7 @@ class MockNetworkInterceptor : Interceptor {
         return if (mockResponse.status >= 400) {
             createErrorResponse(request, mockResponse.body())
         } else {
-            if (mockResponse.errorFrequencyInPercent == 0) {
+            if (mockResponse.errorFrequencyInPercent.isZero()) {
                 createSuccessResponse(mockResponse, request)
             } else {
                 maybeReturnErrorResponse(mockResponse, request)

@@ -20,7 +20,9 @@ class GetNewsUseCase(
                     list.sortedBy { it.pubDate }
                 }
             }
-            NewsListUIModel(sortedNews?.map { it.toUIModel() })
+            NewsListUIModel(
+                newsList = sortedNews?.map { it.toUIModel() }
+            )
         }
     }
 }

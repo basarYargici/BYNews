@@ -2,6 +2,7 @@ package com.basar.bynews.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.basar.bynews.extension.isNull
 import com.basar.bynews.model.NewsDetailResponse
 import com.basar.bynews.model.NewsResponse
 import com.google.gson.Gson
@@ -51,7 +52,7 @@ class PreferencesManager(context: Context) {
 
     private inline fun <reified T : Any> setCachedItem(preferenceKey: PreferenceKey, value: T?) {
         preferences.edit().apply {
-            if (value == null) {
+            if (value.isNull()) {
                 clearCacheForKey(preferenceKey)
             } else {
                 putString(preferenceKey.key, gson.toJson(value))

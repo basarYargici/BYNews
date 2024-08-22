@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.basar.bynews.NEWS_DETAIL_ID
 import com.basar.bynews.base.BaseViewModel
 import com.basar.bynews.domain.GetNewsDetailUseCase
+import com.basar.bynews.extension.isNull
 import com.basar.bynews.model.NewsDetailItemResponse
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.setError
@@ -26,7 +27,7 @@ class NewsDetailViewModel(
             callFlow = getNewsDetailUseCase.invoke(selectedOrderId.value.orEmpty()),
             uiModelFlow = _newsListUIModel
         ).collect { response ->
-            if (response == null) {
+            if (response.isNull()) {
                 _newsListUIModel.setError("Haber bulunamadı")
                 return@collect
             }
