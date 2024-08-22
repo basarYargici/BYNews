@@ -3,6 +3,7 @@ package com.basar.bynews.ui.list.viewModel
 import com.basar.bynews.base.BaseViewModel
 import com.basar.bynews.domain.GetNewsUseCase
 import com.basar.bynews.model.NewsResponse
+import com.basar.bynews.model.uimodel.NewsListUIModel
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.PreferencesManager
 import com.basar.bynews.util.setSuccess
@@ -15,7 +16,7 @@ class NewsListViewModel(
 
     // The conversion from API response to UI model should occur within the use case layer.
     // The ViewModel should only work with already converted UI models, not raw API responses. But time..
-    private val _newsListUIModel = MutableStateFlow(BaseUIModel<NewsResponse>())
+    private val _newsListUIModel = MutableStateFlow(BaseUIModel<NewsListUIModel>())
     val newsListUIModel = _newsListUIModel
 
     private val _isDescendingOrder = MutableStateFlow(preferencesManager.isDescending) // Should be in UIModel

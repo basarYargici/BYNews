@@ -30,21 +30,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.basar.bynews.R
 import com.basar.bynews.extension.shimmerEffect
-import com.basar.bynews.model.NewsItemResponse
-import com.basar.bynews.model.NewsResponse
+import com.basar.bynews.model.uimodel.NewsItemUIModel
+import com.basar.bynews.model.uimodel.NewsListUIModel
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.UiStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsListScreen(
-    uiModelState: BaseUIModel<NewsResponse>,
+    uiModelState: BaseUIModel<NewsListUIModel>,
     isDescendingOrder: Boolean,
     modifier: Modifier,
     onRetry: () -> Unit,
@@ -131,7 +130,7 @@ fun ShimmerNewsListItem(modifier: Modifier = Modifier) {
 @Composable
 private fun SuccessState(
     modifier: Modifier = Modifier,
-    uiModelState: BaseUIModel<NewsResponse>,
+    uiModelState: BaseUIModel<NewsListUIModel>,
     onNavigateToDetail: (id: String) -> Unit
 ) {
     LazyColumn(
@@ -155,7 +154,7 @@ private fun SuccessState(
 }
 
 @Composable
-private fun NewsListItem(item: NewsItemResponse, modifier: Modifier = Modifier) {
+private fun NewsListItem(item: NewsItemUIModel, modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             modifier = Modifier
@@ -236,49 +235,4 @@ private fun EmptyState(
             Text(text = "Click To Retry")
         }
     }
-}
-
-@Preview
-@Composable
-fun NewsListScreenPreview() {
-    NewsListScreen(
-        uiModelState = BaseUIModel(
-            status = UiStatus.Success,
-            data = NewsResponse(
-                newsList = listOf(
-                    NewsItemResponse(
-                        rssDataID = "1",
-                        title = "Title 1",
-                    ),
-                    NewsItemResponse(
-                        rssDataID = "2",
-                        title = "Title 2",
-                    ),
-                    NewsItemResponse(
-                        rssDataID = "3",
-                        title = "Title 3",
-                    )
-                )
-            )
-        ),
-        modifier = Modifier,
-        onRetry = {},
-        onToggleSort = {},
-        isDescendingOrder = false
-    )
-}
-
-@Preview
-@Composable
-fun NewsListErrorPreview() {
-    NewsListScreen(
-        uiModelState = BaseUIModel(
-            status = UiStatus.Error("Error"),
-            data = null
-        ),
-        modifier = Modifier,
-        onRetry = {},
-        onToggleSort = {},
-        isDescendingOrder = false
-    )
 }
