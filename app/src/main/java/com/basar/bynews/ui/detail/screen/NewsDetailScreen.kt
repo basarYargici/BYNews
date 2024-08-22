@@ -3,6 +3,7 @@ package com.basar.bynews.ui.detail.screen
 import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,12 +54,24 @@ fun NewsDetailScreen(
     onGoBack: () -> Unit
 ) {
     var isReaderModeActive by remember { mutableStateOf(false) }
+    val backPressDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     Scaffold(
         topBar = {
             TopAppBar(
-
                 title = { Text("Detail") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            backPressDispatcher?.onBackPressed()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = { isReaderModeActive = !isReaderModeActive }) {
                         Icon(
