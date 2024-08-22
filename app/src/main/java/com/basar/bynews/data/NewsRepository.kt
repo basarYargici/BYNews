@@ -3,7 +3,7 @@ package com.basar.bynews.data
 import com.basar.bynews.model.NewsDetailResponse
 import com.basar.bynews.model.NewsResponse
 import com.basar.bynews.network.NewsService
-import com.basar.bynews.util.CacheManager
+import com.basar.bynews.util.PreferencesManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,18 +11,18 @@ import kotlinx.coroutines.flow.flowOn
 
 class NewsRepository(
     private val newsService: NewsService,
-    private val cacheManager: CacheManager
+    private val preferencesManager: PreferencesManager
 ) {
     suspend fun getNews(): Flow<NewsResponse> = fetchData(
-        getCachedData = { cacheManager.news },
+        getCachedData = { preferencesManager.news },
         getFreshData = { newsService.getNews() },
-        saveCache = { cacheManager.news = it }
+        saveCache = { preferencesManager.news = it }
     )
 
     suspend fun getNewsDetail(): Flow<NewsDetailResponse> = fetchData(
-        getCachedData = { cacheManager.newsDetail },
+        getCachedData = { preferencesManager.newsDetail },
         getFreshData = { newsService.getNewsDetail() },
-        saveCache = { cacheManager.newsDetail = it }
+        saveCache = { preferencesManager.newsDetail = it }
     )
 
     private fun <T : Any> fetchData(

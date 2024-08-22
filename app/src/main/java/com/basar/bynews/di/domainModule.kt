@@ -5,6 +5,6 @@ import com.basar.bynews.domain.GetNewsUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
-    factory { GetNewsUseCase(get()) }
+    factory { GetNewsUseCase(get(),get()) }
     factory { GetNewsDetailUseCase(get()) }
 }

@@ -16,9 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,14 +45,28 @@ import com.basar.bynews.util.UiStatus
 @Composable
 fun NewsListScreen(
     uiModelState: BaseUIModel<NewsResponse>,
+    isDescendingOrder: Boolean,
     modifier: Modifier,
     onRetry: () -> Unit,
-    onNavigateToDetail: (String) -> Unit = { }
+    onNavigateToDetail: (String) -> Unit = { },
+    onToggleSort: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "News List") }
+                title = { Text(text = "News List") },
+                actions = {
+                    TextButton(onClick = onToggleSort) {
+                        Text(
+                            text = if (isDescendingOrder) {
+                                "Change to Oldest Top"
+                            } else {
+                                "Change to Newest Top"
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
             )
         }
     ) { contentPadding ->
@@ -156,12 +172,22 @@ private fun NewsListItem(item: NewsItemResponse, modifier: Modifier = Modifier) 
             onSuccess = { Log.d("AsyncImage", "Success: ${item.imageUrl}") },
             onError = { Log.e("AsyncImage", "Error loading ${item.imageUrl}", it.result.throwable) }
         )
-        Text(
-            text = item.title.orEmpty(),
+        Column(
             modifier = Modifier
                 .padding(start = 12.dp)
-                .weight(1f)
-        )
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = item.pubDate.orEmpty(),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                text = item.title.orEmpty(),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+
     }
 }
 
@@ -236,7 +262,9 @@ fun NewsListScreenPreview() {
             )
         ),
         modifier = Modifier,
-        onRetry = {}
+        onRetry = {},
+        onToggleSort = {},
+        isDescendingOrder = false
     )
 }
 
@@ -249,6 +277,8 @@ fun NewsListErrorPreview() {
             data = null
         ),
         modifier = Modifier,
-        onRetry = {}
+        onRetry = {},
+        onToggleSort = {},
+        isDescendingOrder = false
     )
 }
