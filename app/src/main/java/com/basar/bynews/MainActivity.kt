@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.basar.bynews.ui.detail.route.NewsDetailRoute
+import com.basar.bynews.ui.list.route.NEWS_DETAIL_ID
 import com.basar.bynews.ui.list.route.NewsListRoute
 import com.basar.bynews.ui.splash.route.SplashRoute
 import com.basar.bynews.ui.theme.BYNewsTheme
@@ -35,8 +36,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-const val NEWS_DETAIL_ID = "newsDetailId"
-const val NEWS_DETAIL_ROUTE = "NEWS_DETAIL_ROUTE?$NEWS_DETAIL_ID={$NEWS_DETAIL_ID}"
 
 fun NavGraphBuilder.navigation(
     navController: NavController
@@ -55,7 +54,7 @@ fun NavGraphBuilder.navigation(
     }
 
     composable(
-        route = NEWS_DETAIL_ROUTE,
+        route = BYNewsScreens.NewsDetail.route,
         arguments = listOf(
             navArgument(NEWS_DETAIL_ID) {
                 defaultValue = null

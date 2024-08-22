@@ -1,11 +1,11 @@
 package com.basar.bynews.ui.detail.viewModel
 
 import androidx.lifecycle.SavedStateHandle
-import com.basar.bynews.NEWS_DETAIL_ID
 import com.basar.bynews.base.BaseViewModel
 import com.basar.bynews.domain.GetNewsDetailUseCase
 import com.basar.bynews.extension.isNull
 import com.basar.bynews.model.uimodel.NewsDetailItemUIModel
+import com.basar.bynews.ui.list.route.NEWS_DETAIL_ID
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.setError
 import com.basar.bynews.util.setSuccess

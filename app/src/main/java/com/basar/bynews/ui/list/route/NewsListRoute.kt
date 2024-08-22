@@ -5,10 +5,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.basar.bynews.NEWS_DETAIL_ID
 import com.basar.bynews.ui.list.screen.NewsListScreen
 import com.basar.bynews.ui.list.viewModel.NewsListViewModel
 import org.koin.androidx.compose.koinViewModel
+
+const val NEWS_DETAIL_ID = "newsDetailId"
 
 @Composable
 fun NewsListRoute(
@@ -30,7 +31,7 @@ fun NewsListRoute(
         onRetry = { newsListViewModel.getNews() },
         onToggleSort = { newsListViewModel.toggleSortOrderAndRefresh() },
         onNavigateToDetail = { id ->
-            val route = "NEWS_DETAIL_ROUTE?$NEWS_DETAIL_ID=$id"
+            val route = "newsDetail?$NEWS_DETAIL_ID=$id"
             onNavigateToDetail(route)
         }
     )
