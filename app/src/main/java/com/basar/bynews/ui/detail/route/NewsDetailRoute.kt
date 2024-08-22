@@ -5,8 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import com.basar.bynews.BYNewsScreens
 import com.basar.bynews.ui.detail.screen.NewsDetailScreen
 import com.basar.bynews.ui.detail.viewModel.NewsDetailViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -14,8 +12,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun NewsDetailRoute(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    newsDetailViewModel: NewsDetailViewModel = koinViewModel()
+    newsDetailViewModel: NewsDetailViewModel = koinViewModel(),
+    onGoBack: () -> Unit
 ) {
     val uiModelState by newsDetailViewModel.newsListUIModel.collectAsState()
 
@@ -27,5 +25,6 @@ fun NewsDetailRoute(
         uiModelState = uiModelState,
         modifier = modifier,
         onRetry = { newsDetailViewModel.getNewsDetail() },
+        onGoBack = onGoBack
     )
 }

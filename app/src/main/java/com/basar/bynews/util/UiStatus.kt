@@ -14,6 +14,11 @@ sealed interface UiStatus<out T> {
         (this as? Success)?.let { action() }
     }
 
+    fun onInitial(action: () -> Unit) {
+        (this as? Initial)?.let { action() }
+    }
+
+
     fun onError(action: (String) -> Unit) {
         (this as? Error)?.let { action(it.message) }
     }

@@ -10,7 +10,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-private const val BASE_URL = "http://localhost"
+const val BASE_URL = "http://localhost"
 
 fun remoteModule() = module {
     single {

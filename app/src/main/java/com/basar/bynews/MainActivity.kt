@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 const val NEWS_DETAIL_ID = "newsDetailId"
 const val NEWS_DETAIL_ROUTE = "NEWS_DETAIL_ROUTE?$NEWS_DETAIL_ID={$NEWS_DETAIL_ID}"
 
@@ -45,7 +46,12 @@ fun NavGraphBuilder.navigation(
     }
 
     composable(route = BYNewsScreens.NewsList.route) {
-        NewsListRoute(modifier = Modifier, navController = navController)
+        NewsListRoute(
+            modifier = Modifier,
+            onNavigateToDetail = { route ->
+                navController.navigate(route)
+            }
+        )
     }
 
     composable(
@@ -58,6 +64,6 @@ fun NavGraphBuilder.navigation(
             },
         ),
     ) {
-        NewsDetailRoute(modifier = Modifier, navController = navController)
+        NewsDetailRoute(modifier = Modifier, onGoBack = { navController.popBackStack() })
     }
 }
