@@ -30,21 +30,12 @@ class NewsRepository(
         getFreshData: suspend () -> T,
         saveCache: (T) -> Unit
     ): Flow<T> = flow {
-        val cachedData = getCachedData()
-        cachedData?.let { emit(it) }
-
-        try {
+        getCachedData()?.let { cachedData ->
+            emit(cachedData)
+        } ?: run {
             val freshData = getFreshData()
             saveCache(freshData)
-            if (cachedData != freshData) {
-                emit(freshData)
-            }
-        } catch (e: Exception) {
-            if (cachedData != null) {
-                emit(cachedData)
-            } else {
-                throw e
-            }
+            emit(freshData)
         }
     }.flowOn(Dispatchers.IO)
 }

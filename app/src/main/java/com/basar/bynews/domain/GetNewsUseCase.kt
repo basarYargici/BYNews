@@ -21,7 +21,8 @@ class GetNewsUseCase(
                 }
             }
             NewsListUIModel(
-                newsList = sortedNews?.map { it.toUIModel() }
+                newsList = sortedNews?.map { it.toUIModel() },
+                isDescendingOrder = preferencesManager.isDescending
             )
         }
     }

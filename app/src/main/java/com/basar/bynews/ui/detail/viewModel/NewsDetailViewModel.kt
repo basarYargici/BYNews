@@ -7,7 +7,7 @@ import com.basar.bynews.extension.isNull
 import com.basar.bynews.model.uimodel.NewsDetailItemUIModel
 import com.basar.bynews.ui.list.route.NEWS_DETAIL_ID
 import com.basar.bynews.util.BaseUIModel
-import com.basar.bynews.util.setError
+import com.basar.bynews.util.setEmpty
 import com.basar.bynews.util.setSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +28,7 @@ class NewsDetailViewModel(
             uiModelFlow = _newsListUIModel
         ).collect { response ->
             if (response.isNull()) {
-                _newsListUIModel.setError("Haber bulunamadı")
+                _newsListUIModel.setEmpty("Haber bulunamadı")
                 return@collect
             }
             _newsListUIModel.setSuccess(response)

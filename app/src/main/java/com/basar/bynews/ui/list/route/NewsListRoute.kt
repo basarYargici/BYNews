@@ -30,6 +30,8 @@ fun NewsListRoute(
         modifier = modifier,
         onRetry = { newsListViewModel.getNews() },
         onToggleSort = { newsListViewModel.toggleSortOrderAndRefresh() },
+        onClearCache = { newsListViewModel.clearCache() },
+        onGetPreferencesSize = { newsListViewModel.getPreferencesSize() },
         onNavigateToDetail = { id ->
             val route = "newsDetail?$NEWS_DETAIL_ID=$id"
             onNavigateToDetail(route)

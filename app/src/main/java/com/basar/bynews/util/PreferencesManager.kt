@@ -68,5 +68,23 @@ class PreferencesManager(context: Context) {
         }.apply()
     }
 
-    fun clearAllCache() = preferences.edit().clear().apply()
+    fun getDetailedKBSize(): Int {
+        val sizeMap = preferences.all.mapValues { (_, value) ->
+            when (value) {
+                is String -> value.length * 2 // UTF-16 encoding
+                is Int -> 4
+                is Long -> 8
+                is Float -> 4
+                is Set<*> -> (value as Set<String>).sumOf { it.length * 2 }
+                else -> 0
+            }
+        }
+
+        return sizeMap.values.sum()
+    }
+
+    fun clearAllCache() {
+        clearCacheForKey(PreferenceKey.NEWS)
+        clearCacheForKey(PreferenceKey.NEWS_DETAIL)
+    }
 }

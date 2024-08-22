@@ -23,7 +23,7 @@ fun SplashScreen(
     onNavigateToList: () -> Unit = { }
 ) {
     LaunchedEffect(key1 = Unit) {
-        delay(2000L)
+        delay(1000L)
         onNavigateToList.invoke()
     }
 

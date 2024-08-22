@@ -1,7 +1,9 @@
 package com.basar.bynews.ui.list.viewModel
 
+import android.util.Log
 import com.basar.bynews.base.BaseViewModel
 import com.basar.bynews.domain.GetNewsUseCase
+import com.basar.bynews.extension.isTrue
 import com.basar.bynews.model.uimodel.NewsListUIModel
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.PreferencesManager
@@ -22,6 +24,7 @@ class NewsListViewModel(
             callFlow = getNewsUseCase.invoke(),
             uiModelFlow = _newsListUIModel
         ).collect { response ->
+            Log.d("BASAR", response.isDescendingOrder.isTrue().toString())
             _newsListUIModel.setSuccess(response)
         }
     }
@@ -34,5 +37,15 @@ class NewsListViewModel(
 
     private fun updateIsDescending() {
         _newsListUIModel.update { it.copy(data = it.data?.copy(isDescendingOrder = preferencesManager.isDescending)) }
+    }
+
+    fun getPreferencesSize() {
+        val kbSize = preferencesManager.getDetailedKBSize()
+        _newsListUIModel.update { it.copy(data = it.data?.copy(cachedSize = kbSize)) }
+    }
+
+    fun clearCache() {
+        preferencesManager.clearAllCache()
+        _newsListUIModel.update { it.copy(data = it.data?.copy(cachedSize = null)) }
     }
 }

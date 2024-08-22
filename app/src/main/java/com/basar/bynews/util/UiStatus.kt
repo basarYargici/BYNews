@@ -2,8 +2,9 @@ package com.basar.bynews.util
 
 sealed interface UiStatus<out T> {
     data object Loading : UiStatus<Nothing>
-    data object Success : UiStatus<Nothing>
     data class Error(val message: String) : UiStatus<Nothing>
+    data class Empty(val message: String) : UiStatus<Nothing>
+    data object Success : UiStatus<Nothing>
     data object Initial : UiStatus<Nothing>
 
     fun isLoading() = this is Loading
@@ -18,8 +19,11 @@ sealed interface UiStatus<out T> {
         (this as? Initial)?.let { action() }
     }
 
-
     fun onError(action: (String) -> Unit) {
         (this as? Error)?.let { action(it.message) }
+    }
+
+    fun onEmpty(action: (String) -> Unit) {
+        (this as? Empty)?.let { action(it.message) }
     }
 }
