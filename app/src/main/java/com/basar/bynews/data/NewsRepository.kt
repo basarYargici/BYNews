@@ -1,7 +1,7 @@
 package com.basar.bynews.data
 
-import com.basar.bynews.model.NewsDetailResponse
-import com.basar.bynews.model.NewsResponse
+import com.basar.bynews.model.reqres.NewsDetailResponse
+import com.basar.bynews.model.reqres.NewsResponse
 import com.basar.bynews.network.NewsService
 import com.basar.bynews.util.PreferencesManager
 import kotlinx.coroutines.Dispatchers

@@ -1,6 +1,6 @@
 package com.basar.bynews.model.uimodel
 
-import com.basar.bynews.model.NewsItemResponse
+import com.basar.bynews.model.reqres.NewsItemResponse
 
 data class NewsItemUIModel(
     val rssDataID: String? = null,

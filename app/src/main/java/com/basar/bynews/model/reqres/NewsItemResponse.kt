@@ -1,4 +1,4 @@
-package com.basar.bynews.model
+package com.basar.bynews.model.reqres
 
 data class NewsItemResponse(
     val rssDataID: String? = null,

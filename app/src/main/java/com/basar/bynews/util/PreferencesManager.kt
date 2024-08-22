@@ -3,8 +3,8 @@ package com.basar.bynews.util
 import android.content.Context
 import android.content.SharedPreferences
 import com.basar.bynews.extension.isNull
-import com.basar.bynews.model.NewsDetailResponse
-import com.basar.bynews.model.NewsResponse
+import com.basar.bynews.model.reqres.NewsDetailResponse
+import com.basar.bynews.model.reqres.NewsResponse
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.util.concurrent.TimeUnit

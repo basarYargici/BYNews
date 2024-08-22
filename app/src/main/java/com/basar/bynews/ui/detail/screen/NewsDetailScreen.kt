@@ -44,7 +44,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.basar.bynews.R
-import com.basar.bynews.model.NewsDetailItemResponse
 import com.basar.bynews.model.uimodel.NewsDetailItemUIModel
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.UiStatus
