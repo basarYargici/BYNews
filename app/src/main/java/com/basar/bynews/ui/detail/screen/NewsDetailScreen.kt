@@ -25,6 +25,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -53,19 +56,32 @@ fun NewsDetailScreen(
     onRetry: () -> Unit,
     onGoBack: () -> Unit
 ) {
-    var isReaderModeActive by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val backPressDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    var isReaderModeActive by remember { mutableStateOf(false) }
+    val webView = remember {
+        WebView(context).apply {
+            settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
+            }
+            webViewClient = WebViewClient()
+        }
+    }
+
+    LaunchedEffect(uiModelState.data?.link) {
+        uiModelState.data?.link?.let { url ->
+            webView.loadUrl(url)
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Detail") },
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            backPressDispatcher?.onBackPressed()
-                        }
-                    ) {
+                    IconButton(onClick = { backPressDispatcher?.onBackPressed() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
                             contentDescription = "Back"
@@ -89,28 +105,31 @@ fun NewsDetailScreen(
             top = contentPadding.calculateTopPadding(),
             bottom = contentPadding.calculateBottomPadding(),
         )
+
         when (uiModelState.status) {
             UiStatus.Loading -> LoadingState(innerModifier)
-            UiStatus.Success -> SuccessState(innerModifier, uiModelState.data, isReaderModeActive)
+            UiStatus.Success -> SuccessState(
+                innerModifier,
+                uiModelState.data,
+                isReaderModeActive,
+                webView
+            )
+
             is UiStatus.Error -> ErrorState(innerModifier, onRetry)
             else -> EmptyState(innerModifier, onGoBack)
         }
     }
+
+
+    // Clean up the WebView when the composable is disposed
+    DisposableEffect(Unit) {
+        onDispose {
+            webView.stopLoading()
+            webView.destroy()
+        }
+    }
 }
 
-@Composable
-fun WebViewComponent(url: String) {
-    AndroidView(
-        factory = { context ->
-            WebView(context).apply {
-                settings.javaScriptEnabled = true
-                webViewClient = WebViewClient()
-                loadUrl(url)
-            }
-        },
-        update = { it.loadUrl(url) }
-    )
-}
 
 @Composable
 fun ReaderModeView(
@@ -159,16 +178,23 @@ private fun SuccessState(
     modifier: Modifier = Modifier,
     data: NewsDetailItemResponse?,
     isReaderModeActive: Boolean,
+    webView: WebView
 ) {
     Box(modifier = modifier) {
+        // Always keep the WebView in the composition, but control its visibility
+        AndroidView(
+            factory = { webView },
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer(alpha = if (isReaderModeActive) 0f else 1f)
+        )
+
         if (isReaderModeActive) {
             ReaderModeView(
                 title = data?.title.orEmpty(),
                 description = data?.description.orEmpty(),
                 imageUrl = data?.imageUrl.orEmpty()
             )
-        } else {
-            WebViewComponent(data?.link.orEmpty())
         }
     }
 }
