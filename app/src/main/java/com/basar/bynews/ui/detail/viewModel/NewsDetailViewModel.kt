@@ -6,6 +6,7 @@ import com.basar.bynews.base.BaseViewModel
 import com.basar.bynews.domain.GetNewsDetailUseCase
 import com.basar.bynews.extension.isNull
 import com.basar.bynews.model.NewsDetailItemResponse
+import com.basar.bynews.model.uimodel.NewsDetailItemUIModel
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.setError
 import com.basar.bynews.util.setSuccess
@@ -19,7 +20,7 @@ class NewsDetailViewModel(
 
     private val selectedOrderId: StateFlow<String?> = savedStateHandle.getStateFlow(NEWS_DETAIL_ID, null)
 
-    private val _newsListUIModel = MutableStateFlow(BaseUIModel<NewsDetailItemResponse?>())
+    private val _newsListUIModel = MutableStateFlow(BaseUIModel<NewsDetailItemUIModel?>())
     val newsListUIModel = _newsListUIModel
 
     fun getNewsDetail() = launchIO {

@@ -45,13 +45,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.basar.bynews.R
 import com.basar.bynews.model.NewsDetailItemResponse
+import com.basar.bynews.model.uimodel.NewsDetailItemUIModel
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.UiStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsDetailScreen(
-    uiModelState: BaseUIModel<NewsDetailItemResponse?>,
+    uiModelState: BaseUIModel<NewsDetailItemUIModel?>,
     modifier: Modifier = Modifier,
     onRetry: () -> Unit,
     onGoBack: () -> Unit
@@ -176,7 +177,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 @Composable
 private fun SuccessState(
     modifier: Modifier = Modifier,
-    data: NewsDetailItemResponse?,
+    data: NewsDetailItemUIModel?,
     isReaderModeActive: Boolean,
     webView: WebView
 ) {
