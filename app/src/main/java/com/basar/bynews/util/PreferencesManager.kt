@@ -13,7 +13,7 @@ class PreferencesManager(context: Context) {
     private val MODE = Context.MODE_PRIVATE
     private val preferences: SharedPreferences by lazy { context.getSharedPreferences(NAME, MODE) }
     private val gson: Gson by lazy { GsonBuilder().create() }
-    private val cacheTimeout = TimeUnit.SECONDS.toMillis(120)
+    private val cacheTimeout = TimeUnit.MINUTES.toMillis(2)
 
     var news: NewsResponse?
         get() = getCachedItem(PreferenceKey.NEWS)
