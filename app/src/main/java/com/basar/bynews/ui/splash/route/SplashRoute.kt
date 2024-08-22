@@ -14,7 +14,9 @@ fun SplashRoute(
     SplashScreen(
         modifier = modifier,
         onNavigateToList = {
-            navController.navigate(BYNewsScreens.NewsList.route)
+            navController.navigate(BYNewsScreens.NewsList.route) {
+                popUpTo(BYNewsScreens.Splash.route) { inclusive = true }
+            }
         }
     )
 }
