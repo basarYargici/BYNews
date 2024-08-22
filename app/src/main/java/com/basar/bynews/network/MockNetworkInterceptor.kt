@@ -1,13 +1,11 @@
 package com.basar.bynews.network
 
-import com.basar.bynews.extension.isZero
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import kotlin.random.Random
 
 class MockNetworkInterceptor : Interceptor {
 
@@ -15,40 +13,21 @@ class MockNetworkInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        val mockResponse = findMockResponseInList(request)
-            ?: throw RuntimeException("No mock response found for url ${request.url}. Please define a mock response in your MockApi!")
+        val mockResponse = findMockResponseInList(request) ?: throw RuntimeException(
+            "No mock response found for url ${request.url}. Please define a mock response in your MockApi!"
+        )
 
-        removeResponseIfItShouldNotBePersisted(mockResponse)
         simulateNetworkDelay(mockResponse)
-
         return if (mockResponse.status >= 400) {
-            createErrorResponse(request, mockResponse.body())
+            createErrorResponse(request, mockResponse.body)
         } else {
-            if (mockResponse.errorFrequencyInPercent.isZero()) {
-                createSuccessResponse(mockResponse, request)
-            } else {
-                maybeReturnErrorResponse(mockResponse, request)
-            }
+            createSuccessResponse(mockResponse, request)
         }
-    }
-
-    private fun maybeReturnErrorResponse(
-        mockResponse: MockResponse,
-        request: Request
-    ) = when (Random.nextInt(0, 101)) {
-        in 0..mockResponse.errorFrequencyInPercent -> createErrorResponse(request)
-        else -> createSuccessResponse(mockResponse, request)
     }
 
     private fun findMockResponseInList(request: Request): MockResponse? {
         return mockResponses.find { mockResponse ->
             mockResponse.path.contains(request.url.encodedPath)
-        }
-    }
-
-    private fun removeResponseIfItShouldNotBePersisted(mockResponse: MockResponse) {
-        if (!mockResponse.persist) {
-            mockResponses.remove(mockResponse)
         }
     }
 
@@ -63,8 +42,7 @@ class MockNetworkInterceptor : Interceptor {
             .protocol(Protocol.HTTP_1_1)
             .message("Internal Server Error: $errorBody")
             .body(
-                errorBody
-                    .toResponseBody("text/plain".toMediaType())
+                errorBody.toResponseBody("text/plain".toMediaType())
             )
             .build()
     }
@@ -79,42 +57,30 @@ class MockNetworkInterceptor : Interceptor {
             .protocol(Protocol.HTTP_1_1)
             .message("OK")
             .body(
-                mockResponse.body.invoke()
-                    .toResponseBody("application/json".toMediaType())
+                mockResponse.body.toResponseBody("application/json".toMediaType())
             )
             .build()
     }
 
     fun mock(
         path: String,
-        body: () -> String,
+        body: String,
         status: Int,
         delayInMs: Long = 250,
-        persist: Boolean = true,
-        errorFrequencyInPercent: Int = 0
     ) = apply {
-        val mockResponse =
-            MockResponse(
-                path,
-                body,
-                status,
-                delayInMs,
-                persist,
-                errorFrequencyInPercent
-            )
+        val mockResponse = MockResponse(
+            path = path,
+            body = body,
+            status = status,
+            delayInMs = delayInMs,
+        )
         mockResponses.add(mockResponse)
-    }
-
-    companion object {
-        const val INTERNAL_SERVER_ERROR_HTTP_CODE = 500
     }
 }
 
 data class MockResponse(
     val path: String,
-    val body: () -> String,
+    val body: String,
     val status: Int,
     val delayInMs: Long,
-    val persist: Boolean,
-    val errorFrequencyInPercent: Int
 )

@@ -24,7 +24,6 @@ class NewsListViewModel(
             callFlow = getNewsUseCase.invoke(),
             uiModelFlow = _newsListUIModel
         ).collect { response ->
-            Log.d("BASAR", response.isDescendingOrder.isTrue().toString())
             _newsListUIModel.setSuccess(response)
         }
     }

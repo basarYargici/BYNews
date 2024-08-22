@@ -85,10 +85,8 @@ fun NewsListScreen(
                             text = {
                                 Text(
                                     text = if (uiModelState.data?.isDescendingOrder.isTrue()) {
-                                        Log.d("BASAR", uiModelState.data?.isDescendingOrder.isTrue().toString())
                                         "Change to Oldest Top"
                                     } else {
-                                        Log.d("BASAR", uiModelState.data?.isDescendingOrder.isTrue().toString())
                                         "Change to Newest Top"
                                     },
                                     style = MaterialTheme.typography.bodyMedium,

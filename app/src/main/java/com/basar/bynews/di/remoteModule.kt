@@ -10,12 +10,12 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val BASE_URL = "http://localhost"
+private const val BASE_URL = "http://localhost"
 
 fun remoteModule() = module {
     single {
         OkHttpClient.Builder()
-            .addInterceptor(mockInterceptor())
+            .addInterceptor(getMockInterceptor())
             .build()
     }
 
@@ -30,16 +30,16 @@ fun remoteModule() = module {
     factory { get<Retrofit>().create(NewsService::class.java) }
 }
 
-private fun mockInterceptor(): Interceptor = MockNetworkInterceptor()
+private fun getMockInterceptor(): Interceptor = MockNetworkInterceptor()
     .mock(
-        "$BASE_URL/news",
-        { newsResponse },
-        200,
-        2000
+        path = "$BASE_URL/news",
+        body = newsResponse,
+        status = 200,
+        delayInMs = 2000
     )
     .mock(
-        "$BASE_URL/newsDetail",
-        { newsDetailResponse },
-        200,
-        2000
+        path = "$BASE_URL/newsDetail",
+        body = newsDetailResponse,
+        status = 200,
+        delayInMs = 2000
     )
