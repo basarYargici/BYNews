@@ -1,9 +1,13 @@
 package com.basar.bynews.ui.detail.screen
 
+import android.graphics.Bitmap
 import android.util.Log
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,6 +53,7 @@ import com.basar.bynews.model.uimodel.NewsDetailItemUIModel
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.UiStatus
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsDetailScreen(
@@ -56,6 +62,41 @@ fun NewsDetailScreen(
     onRetry: () -> Unit,
     onGoBack: () -> Unit
 ) {
+    val isDarkMode = isSystemInDarkTheme()
+    val surfaceColor = MaterialTheme.colorScheme.surface.toArgb()
+    val surfaceColorHex = String.format("#%06X", 0xFFFFFF and surfaceColor)
+
+    val darkModeJS = """
+        javascript:(function() {
+            function applyTheme(isDark, surfaceColor) {
+                document.body.style.backgroundColor = surfaceColor;
+                document.body.style.color = isDark ? '#FFFFFF' : '#000000';
+                
+                // Target common elements
+                var elements = document.querySelectorAll('div, p, span, h1, h2, h3, h4, h5, h6, a');
+                for (var i = 0; i < elements.length; i++) {
+                    elements[i].style.backgroundColor = surfaceColor;
+                    elements[i].style.color = isDark ? '#FFFFFF' : '#000000';
+                }
+                
+                // Handle specific cases (e.g., links)
+                var links = document.getElementsByTagName('a');
+                for (var i = 0; i < links.length; i++) {
+                    links[i].style.color = isDark ? '#4CAF50' : '#1976D2';
+                }
+            }
+            
+            // Run immediately
+            applyTheme($isDarkMode, '$surfaceColorHex');
+            
+            // Re-run on dynamic content changes
+            var observer = new MutationObserver(function(mutations) {
+                applyTheme($isDarkMode, '$surfaceColorHex');
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        })();
+    """.trimIndent()
+
     val context = LocalContext.current
     val backPressDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     var isReaderModeActive by remember { mutableStateOf(false) }
@@ -66,7 +107,26 @@ fun NewsDetailScreen(
                 domStorageEnabled = true
                 setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
             }
-            webViewClient = WebViewClient()
+            setBackgroundColor(surfaceColor)
+
+            webViewClient = object : WebViewClient() {
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                    view?.setBackgroundColor(surfaceColor)
+                    view?.evaluateJavascript(darkModeJS, null)
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    view?.setBackgroundColor(surfaceColor)
+                    view?.evaluateJavascript(darkModeJS, null)
+                }
+
+                override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                    super.onReceivedError(view, request, error)
+                    view?.setBackgroundColor(surfaceColor)
+                }
+            }
         }
     }
 
