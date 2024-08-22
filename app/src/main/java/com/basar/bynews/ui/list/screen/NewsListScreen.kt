@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -26,7 +27,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -55,7 +60,7 @@ import com.basar.bynews.util.UiStatus
 fun NewsListScreen(
     uiModelState: BaseUIModel<NewsListUIModel>,
     modifier: Modifier,
-    onRetry: () -> Unit,
+    onRetry: (Boolean) -> Unit,
     onNavigateToDetail: (String) -> Unit = { },
     onToggleSort: () -> Unit,
     onClearCache: () -> Unit,
@@ -119,9 +124,15 @@ fun NewsListScreen(
         )
         when (uiModelState.status) {
             UiStatus.Loading -> LoadingState(innerModifier)
-            UiStatus.Success -> SuccessState(innerModifier, uiModelState, onNavigateToDetail)
-            is UiStatus.Error -> ErrorState(innerModifier, onRetry = onRetry)
-            else -> EmptyState(innerModifier, onRetry = onRetry)
+            UiStatus.Success -> SuccessState(
+                modifier = innerModifier,
+                uiModelState = uiModelState,
+                onNavigateToDetail = onNavigateToDetail,
+                onRefresh = { onRetry(true) }
+            )
+
+            is UiStatus.Error -> ErrorState(innerModifier, onRetry = { onRetry(true) })
+            else -> EmptyState(innerModifier, onRetry = { onRetry(true) })
         }
     }
 }
@@ -171,29 +182,42 @@ fun ShimmerNewsListItem(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SuccessState(
     modifier: Modifier = Modifier,
     uiModelState: BaseUIModel<NewsListUIModel>,
-    onNavigateToDetail: (id: String) -> Unit
+    onRefresh: () -> Unit,
+    onNavigateToDetail: (id: String) -> Unit,
 ) {
-    LazyColumn(
-        modifier = modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    val pullRefreshState = rememberPullToRefreshState()
+
+    if (pullRefreshState.isRefreshing) {
+        LaunchedEffect(Unit) {
+            onRefresh()
+        }
+    }
+
+    Box(
+        modifier = Modifier.nestedScroll(pullRefreshState.nestedScrollConnection)
     ) {
-        uiModelState.data?.newsList?.let {
-            items(it.size) { index ->
-                val item = it[index]
+        LazyColumn(
+            modifier = modifier.padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(uiModelState.data?.newsList.orEmpty()) { item ->
                 NewsListItem(
                     item = item,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            onNavigateToDetail.invoke(item.rssDataID.orEmpty())
-                        }
+                        .clickable { onNavigateToDetail(item.rssDataID.orEmpty()) }
                 )
             }
         }
+        PullToRefreshContainer(
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }
 

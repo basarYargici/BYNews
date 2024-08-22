@@ -11,8 +11,8 @@ class GetNewsUseCase(
     private val newsRepository: NewsRepository,
     private val preferencesManager: PreferencesManager
 ) {
-    suspend operator fun invoke(): Flow<NewsListUIModel> {
-        return newsRepository.getNews().map { news ->
+    suspend operator fun invoke(isForceFetch:Boolean): Flow<NewsListUIModel> {
+        return newsRepository.getNews(isForceFetch).map { news ->
             val sortedNews = news.newsList?.let { list ->
                 if (preferencesManager.isDescending) {
                     list.sortedByDescending { it.pubDate }

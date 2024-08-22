@@ -1,9 +1,7 @@
 package com.basar.bynews.ui.list.viewModel
 
-import android.util.Log
 import com.basar.bynews.base.BaseViewModel
 import com.basar.bynews.domain.GetNewsUseCase
-import com.basar.bynews.extension.isTrue
 import com.basar.bynews.model.uimodel.NewsListUIModel
 import com.basar.bynews.util.BaseUIModel
 import com.basar.bynews.util.PreferencesManager
@@ -19,9 +17,9 @@ class NewsListViewModel(
     private val _newsListUIModel = MutableStateFlow(BaseUIModel<NewsListUIModel>())
     val newsListUIModel = _newsListUIModel
 
-    fun getNews() = launchIO {
+    fun getNews(isForceFetch: Boolean = false) = launchIO {
         executeFlow(
-            callFlow = getNewsUseCase.invoke(),
+            callFlow = getNewsUseCase.invoke(isForceFetch),
             uiModelFlow = _newsListUIModel
         ).collect { response ->
             _newsListUIModel.setSuccess(response)

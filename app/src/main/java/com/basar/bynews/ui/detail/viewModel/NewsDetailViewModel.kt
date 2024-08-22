@@ -22,9 +22,9 @@ class NewsDetailViewModel(
     private val _newsListUIModel = MutableStateFlow(BaseUIModel<NewsDetailItemUIModel?>())
     val newsListUIModel = _newsListUIModel
 
-    fun getNewsDetail() = launchIO {
+    fun getNewsDetail(isForceFetch: Boolean = false) = launchIO {
         executeFlow(
-            callFlow = getNewsDetailUseCase.invoke(selectedOrderId.value.orEmpty()),
+            callFlow = getNewsDetailUseCase.invoke(id = selectedOrderId.value.orEmpty(), isForceFetch = isForceFetch),
             uiModelFlow = _newsListUIModel
         ).collect { response ->
             if (response.isNull()) {

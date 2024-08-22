@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.map
 class GetNewsDetailUseCase(
     private val newsRepository: NewsRepository
 ) {
-    suspend operator fun invoke(id: String): Flow<NewsDetailItemUIModel?> {
-        return newsRepository.getNewsDetail().map { list ->
+    suspend operator fun invoke(id: String, isForceFetch: Boolean): Flow<NewsDetailItemUIModel?> {
+        return newsRepository.getNewsDetail(isForceFetch).map { list ->
             val item = list.newsList.find { it.rssDataID == id }
             item?.toUIModel()
         }

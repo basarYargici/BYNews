@@ -28,7 +28,7 @@ fun NewsListRoute(
     NewsListScreen(
         uiModelState = uiModelState,
         modifier = modifier,
-        onRetry = { newsListViewModel.getNews() },
+        onRetry = { newsListViewModel.getNews(true) },
         onToggleSort = { newsListViewModel.toggleSortOrderAndRefresh() },
         onClearCache = { newsListViewModel.clearCache() },
         onGetPreferencesSize = { newsListViewModel.getPreferencesSize() },

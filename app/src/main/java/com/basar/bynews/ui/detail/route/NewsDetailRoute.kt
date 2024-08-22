@@ -24,7 +24,7 @@ fun NewsDetailRoute(
     NewsDetailScreen(
         uiModelState = uiModelState,
         modifier = modifier,
-        onRetry = { newsDetailViewModel.getNewsDetail() },
+        onRetry = { newsDetailViewModel.getNewsDetail(true) },
         onGoBack = onGoBack
     )
 }
