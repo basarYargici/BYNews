@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -44,15 +45,15 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.basar.bynews.R
-import com.basar.bynews.model.uimodel.NewsDetailItemUIModel
-import com.basar.bynews.util.BaseUIModel
-import com.basar.bynews.util.UiStatus
-
+import com.basar.bynews.domain.uimodel.NewsDetailItemUIModel
+import com.basar.bynews.domain.uimodel.BaseUIModel
+import com.basar.bynews.domain.uimodel.UiStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,6 +107,7 @@ fun NewsDetailScreen(
                 javaScriptEnabled = true
                 domStorageEnabled = true
                 setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
+                cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
             }
             setBackgroundColor(surfaceColor)
 
@@ -190,6 +192,38 @@ fun NewsDetailScreen(
     }
 }
 
+@Composable
+private fun LoadingState(modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun SuccessState(
+    modifier: Modifier = Modifier,
+    data: NewsDetailItemUIModel?,
+    isReaderModeActive: Boolean,
+    webView: WebView
+) {
+    Box(modifier = modifier) {
+        // Always keep the WebView in the composition, but control its visibility
+        AndroidView(
+            factory = { webView },
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer(alpha = if (isReaderModeActive) 0f else 1f)
+        )
+
+        if (isReaderModeActive) {
+            ReaderModeView(
+                title = data?.title.orEmpty(),
+                description = data?.description.orEmpty(),
+                imageUrl = data?.imageUrl.orEmpty()
+            )
+        }
+    }
+}
 
 @Composable
 fun ReaderModeView(
@@ -227,39 +261,6 @@ fun ReaderModeView(
 }
 
 @Composable
-private fun LoadingState(modifier: Modifier = Modifier) {
-    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun SuccessState(
-    modifier: Modifier = Modifier,
-    data: NewsDetailItemUIModel?,
-    isReaderModeActive: Boolean,
-    webView: WebView
-) {
-    Box(modifier = modifier) {
-        // Always keep the WebView in the composition, but control its visibility
-        AndroidView(
-            factory = { webView },
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer(alpha = if (isReaderModeActive) 0f else 1f)
-        )
-
-        if (isReaderModeActive) {
-            ReaderModeView(
-                title = data?.title.orEmpty(),
-                description = data?.description.orEmpty(),
-                imageUrl = data?.imageUrl.orEmpty()
-            )
-        }
-    }
-}
-
-@Composable
 private fun ErrorState(
     modifier: Modifier = Modifier,
     onRetry: () -> Unit
@@ -267,7 +268,7 @@ private fun ErrorState(
     StateLayout(
         modifier = modifier,
         iconRes = R.drawable.ic_error,
-        message = "Error Occurred While Fetching The Detail Data.",
+        message = "An error occurred while fetching the detailed data.",
         buttonText = "Click To Retry",
         onButtonClick = onRetry
     )
@@ -281,8 +282,7 @@ private fun EmptyState(
     StateLayout(
         modifier = modifier,
         iconRes = R.drawable.ic_explore_off,
-        message = "There is no data.",
-        buttonText = "Click To Go Back",
+        message = "There is no data available from the provided URL.",
         onButtonClick = onGoBack
     )
 }
@@ -292,7 +292,7 @@ private fun StateLayout(
     modifier: Modifier = Modifier,
     iconRes: Int,
     message: String,
-    buttonText: String,
+    buttonText: String? = null,
     onButtonClick: () -> Unit
 ) {
     Column(
@@ -306,9 +306,15 @@ private fun StateLayout(
             tint = Color.Red,
             modifier = Modifier.size(128.dp)
         )
-        Text(text = message, style = MaterialTheme.typography.bodyLarge)
-        OutlinedButton(onClick = onButtonClick) {
-            Text(text = buttonText)
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center),
+            modifier = Modifier.fillMaxWidth(0.7f)
+        )
+        buttonText?.let {
+            OutlinedButton(onClick = onButtonClick) {
+                Text(text = buttonText)
+            }
         }
     }
 }

@@ -2,13 +2,14 @@ package com.basar.bynews.ui.detail.viewModel
 
 import androidx.lifecycle.SavedStateHandle
 import com.basar.bynews.base.BaseViewModel
+import com.basar.bynews.data.CacheStrategy
 import com.basar.bynews.domain.GetNewsDetailUseCase
 import com.basar.bynews.extension.isNull
-import com.basar.bynews.model.uimodel.NewsDetailItemUIModel
+import com.basar.bynews.domain.uimodel.NewsDetailItemUIModel
 import com.basar.bynews.ui.list.route.NEWS_DETAIL_ID
-import com.basar.bynews.util.BaseUIModel
-import com.basar.bynews.util.setEmpty
-import com.basar.bynews.util.setSuccess
+import com.basar.bynews.domain.uimodel.BaseUIModel
+import com.basar.bynews.domain.uimodel.setEmpty
+import com.basar.bynews.domain.uimodel.setSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -22,16 +23,16 @@ class NewsDetailViewModel(
     private val _newsListUIModel = MutableStateFlow(BaseUIModel<NewsDetailItemUIModel?>())
     val newsListUIModel = _newsListUIModel
 
-    fun getNewsDetail(isForceFetch: Boolean = false) = launchIO {
+    fun getNewsDetail(cacheStrategy: CacheStrategy) = launchIO {
         executeFlow(
-            callFlow = getNewsDetailUseCase.invoke(id = selectedOrderId.value.orEmpty(), isForceFetch = isForceFetch),
+            callFlow = getNewsDetailUseCase.invoke(id = selectedOrderId.value.orEmpty(), cacheStrategy = cacheStrategy),
             uiModelFlow = _newsListUIModel
-        ).collect { response ->
-            if (response.isNull()) {
+        ).collect { result ->
+            if (result.isNull()) {
                 _newsListUIModel.setEmpty("Haber bulunamadı")
                 return@collect
             }
-            _newsListUIModel.setSuccess(response)
+            _newsListUIModel.setSuccess(result)
         }
     }
 }

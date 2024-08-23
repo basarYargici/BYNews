@@ -1,4 +1,4 @@
-package com.basar.bynews.util
+package com.basar.bynews.domain.uimodel
 
 sealed interface UiStatus<out T> {
     data object Loading : UiStatus<Nothing>

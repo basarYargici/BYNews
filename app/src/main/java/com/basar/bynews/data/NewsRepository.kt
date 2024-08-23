@@ -4,10 +4,9 @@ import com.basar.bynews.data.CacheStrategy.CacheFirstThenFetch
 import com.basar.bynews.data.CacheStrategy.CacheOnly
 import com.basar.bynews.data.CacheStrategy.FetchFirstThenCache
 import com.basar.bynews.data.CacheStrategy.NoCache
-import com.basar.bynews.model.reqres.NewsDetailResponse
-import com.basar.bynews.model.reqres.NewsResponse
+import com.basar.bynews.model.NewsDetailResponse
+import com.basar.bynews.model.NewsResponse
 import com.basar.bynews.network.NewsService
-import com.basar.bynews.util.PreferencesManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,24 +14,24 @@ import kotlinx.coroutines.flow.flowOn
 
 class NewsRepository(
     private val newsService: NewsService,
-    private val preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager,
 ) {
-    suspend fun getNews(isForceFetch: Boolean): Flow<NewsResponse> = fetchData(
-        cacheStrategy = if (isForceFetch) FetchFirstThenCache else CacheFirstThenFetch,
+    suspend fun getNews(cacheStrategy: CacheStrategy): Flow<NewsResponse> = fetchData(
+        cacheStrategy = cacheStrategy,
         getCachedData = { preferencesManager.news },
         getFreshData = { newsService.getNews() },
         saveCache = { preferencesManager.news = it }
     )
 
-    suspend fun getNewsDetail(isForceFetch: Boolean): Flow<NewsDetailResponse> = fetchData(
-        cacheStrategy = if (isForceFetch) FetchFirstThenCache else CacheFirstThenFetch,
+    suspend fun getNewsDetail(cacheStrategy: CacheStrategy): Flow<NewsDetailResponse> = fetchData(
+        cacheStrategy = cacheStrategy,
         getCachedData = { preferencesManager.newsDetail },
         getFreshData = { newsService.getNewsDetail() },
         saveCache = { preferencesManager.newsDetail = it }
     )
 
     private fun <T : Any> fetchData(
-        cacheStrategy: CacheStrategy = FetchFirstThenCache,
+        cacheStrategy: CacheStrategy = CacheFirstThenFetch,
         getCachedData: () -> T?,
         getFreshData: suspend () -> T,
         saveCache: (T) -> Unit

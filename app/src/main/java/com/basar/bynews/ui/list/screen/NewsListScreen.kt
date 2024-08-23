@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,17 +44,19 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.basar.bynews.R
+import com.basar.bynews.extension.formatDateAccordingToLocale
 import com.basar.bynews.extension.isTrue
 import com.basar.bynews.extension.orZero
 import com.basar.bynews.extension.shimmerEffect
-import com.basar.bynews.model.uimodel.NewsItemUIModel
-import com.basar.bynews.model.uimodel.NewsListUIModel
-import com.basar.bynews.util.BaseUIModel
-import com.basar.bynews.util.UiStatus
+import com.basar.bynews.domain.uimodel.NewsItemUIModel
+import com.basar.bynews.domain.uimodel.NewsListUIModel
+import com.basar.bynews.domain.uimodel.BaseUIModel
+import com.basar.bynews.domain.uimodel.UiStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,7 +134,12 @@ fun NewsListScreen(
                 onRefresh = { onRetry(true) }
             )
 
-            is UiStatus.Error -> ErrorState(innerModifier, onRetry = { onRetry(true) })
+            is UiStatus.Error -> ErrorState(
+                modifier = innerModifier,
+                uiModelState = uiModelState,
+                onRetry = { onRetry(true) }
+            )
+
             else -> EmptyState(innerModifier, onRetry = { onRetry(true) })
         }
     }
@@ -203,7 +211,6 @@ private fun SuccessState(
     ) {
         LazyColumn(
             modifier = modifier.padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(uiModelState.data?.newsList.orEmpty()) { item ->
                 NewsListItem(
@@ -212,6 +219,7 @@ private fun SuccessState(
                         .fillMaxWidth()
                         .clickable { onNavigateToDetail(item.rssDataID.orEmpty()) }
                 )
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = (0.5).dp)
             }
         }
         PullToRefreshContainer(
@@ -246,24 +254,30 @@ private fun NewsListItem(item: NewsItemUIModel, modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = item.pubDate.orEmpty(),
-                style = MaterialTheme.typography.bodyMedium,
+                text = item.title.orEmpty(),
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = item.title.orEmpty(),
-                style = MaterialTheme.typography.bodyLarge,
+                text = item.pubDate.orEmpty().formatDateAccordingToLocale(),
+                style = MaterialTheme.typography.bodyMedium,
             )
+
         }
 
     }
 }
 
-
 @Composable
 private fun ErrorState(
     modifier: Modifier = Modifier,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    uiModelState: BaseUIModel<NewsListUIModel>
 ) {
+    var message = "Error Occured While Fetching The Data."
+    uiModelState.status.onError { message = it }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
@@ -275,7 +289,7 @@ private fun ErrorState(
             painter = painterResource(id = R.drawable.ic_error),
             contentDescription = "Error"
         )
-        Text(text = "Error Occured While Fetching The Data.", modifier = Modifier.clickable { onRetry.invoke() })
+        Text(text = message)
         OutlinedButton(onClick = { onRetry.invoke() }) {
             Text(text = "Click To Retry")
         }

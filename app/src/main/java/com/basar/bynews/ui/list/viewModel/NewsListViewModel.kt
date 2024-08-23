@@ -1,11 +1,15 @@
 package com.basar.bynews.ui.list.viewModel
 
 import com.basar.bynews.base.BaseViewModel
+import com.basar.bynews.data.CacheStrategy
+import com.basar.bynews.data.CacheStrategy.CacheOnly
 import com.basar.bynews.domain.GetNewsUseCase
-import com.basar.bynews.model.uimodel.NewsListUIModel
-import com.basar.bynews.util.BaseUIModel
-import com.basar.bynews.util.PreferencesManager
-import com.basar.bynews.util.setSuccess
+import com.basar.bynews.extension.millisToRoundedSeconds
+import com.basar.bynews.domain.uimodel.NewsListUIModel
+import com.basar.bynews.domain.uimodel.BaseUIModel
+import com.basar.bynews.data.PreferenceKey
+import com.basar.bynews.data.PreferencesManager
+import com.basar.bynews.domain.uimodel.setSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -17,19 +21,19 @@ class NewsListViewModel(
     private val _newsListUIModel = MutableStateFlow(BaseUIModel<NewsListUIModel>())
     val newsListUIModel = _newsListUIModel
 
-    fun getNews(isForceFetch: Boolean = false) = launchIO {
+    fun getNews(cacheStrategy: CacheStrategy) = launchIO {
         executeFlow(
-            callFlow = getNewsUseCase.invoke(isForceFetch),
+            callFlow = getNewsUseCase.invoke(cacheStrategy),
             uiModelFlow = _newsListUIModel
-        ).collect { response ->
-            _newsListUIModel.setSuccess(response)
+        ).collect { result ->
+            _newsListUIModel.setSuccess(result)
         }
     }
 
     fun toggleSortOrderAndRefresh() = launchIO {
         preferencesManager.isDescending = !preferencesManager.isDescending
         updateIsDescending()
-        getNews() // Could be optimized to only sort the _newsListUIModel
+        getNews(cacheStrategy = CacheOnly)
     }
 
     private fun updateIsDescending() {
@@ -39,6 +43,12 @@ class NewsListViewModel(
     fun getPreferencesSize() {
         val kbSize = preferencesManager.getDetailedKBSize()
         _newsListUIModel.update { it.copy(data = it.data?.copy(cachedSize = kbSize)) }
+    }
+
+    fun getLatestSyncTime(): String {
+        val lastUpdatedTime = preferencesManager.getLastUpdated(PreferenceKey.NEWS)
+        val diff = (System.currentTimeMillis() - lastUpdatedTime)
+        return diff.millisToRoundedSeconds().toString() + "s"
     }
 
     fun clearCache() {

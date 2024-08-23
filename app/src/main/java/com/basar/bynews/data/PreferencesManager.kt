@@ -1,18 +1,24 @@
-package com.basar.bynews.util
+package com.basar.bynews.data
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.basar.bynews.extension.isNull
-import com.basar.bynews.model.reqres.NewsDetailResponse
-import com.basar.bynews.model.reqres.NewsResponse
+import com.basar.bynews.model.NewsDetailResponse
+import com.basar.bynews.model.NewsResponse
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.util.concurrent.TimeUnit
 
+enum class PreferenceKey(val key: String) {
+    NEWS("news"),
+    NEWS_DETAIL("news_detail"),
+    IS_DESCENDING("is_descending")
+}
+
 class PreferencesManager(context: Context) {
-    private val NAME = "BYNews"
-    private val MODE = Context.MODE_PRIVATE
-    private val preferences: SharedPreferences by lazy { context.getSharedPreferences(NAME, MODE) }
+    private val name = "BYNews"
+    private val mode = Context.MODE_PRIVATE
+    private val preferences: SharedPreferences by lazy { context.getSharedPreferences(name, mode) }
     private val gson: Gson by lazy { GsonBuilder().create() }
     private val cacheTimeout = TimeUnit.MINUTES.toMillis(2)
 
@@ -27,12 +33,6 @@ class PreferencesManager(context: Context) {
     var isDescending: Boolean
         get() = preferences.getBoolean(PreferenceKey.IS_DESCENDING.key, false)
         set(value) = preferences.edit().putBoolean(PreferenceKey.IS_DESCENDING.key, value).apply()
-
-    private enum class PreferenceKey(val key: String) {
-        NEWS("news"),
-        NEWS_DETAIL("news_detail"),
-        IS_DESCENDING("is_descending")
-    }
 
     private inline fun <reified T : Any> getCachedItem(preferenceKey: PreferenceKey): T? {
         val data = preferences.getString(preferenceKey.key, null) ?: return null
@@ -66,6 +66,10 @@ class PreferencesManager(context: Context) {
             remove(preferenceKey.key)
             remove("${preferenceKey.key}_timestamp")
         }.apply()
+    }
+
+    fun getLastUpdated(preferenceKey: PreferenceKey): Long {
+        return preferences.getLong("${preferenceKey.key}_timestamp", 0)
     }
 
     fun getDetailedKBSize(): Int {
